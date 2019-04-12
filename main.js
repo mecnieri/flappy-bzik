@@ -13,8 +13,8 @@ let Application = PIXI.Application,
   TextStyle = PIXI.TextStyle;
 //Create a Pixi Application
 let app = new Application({
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 800,
+  height: 500,
   antialias: true,
   transparent: false,
   resolution: 1
@@ -22,11 +22,26 @@ let app = new Application({
 
 document.body.appendChild(app.view);
 
-//#endregion
 let state, gameScene, gameOverScene, message;
 
 loader.load(setup);
+//#endregion
+
 function setup() {
+
+  //#region  PARALLAX
+  
+  let midTexture = PIXI.Texture.fromImage("images/bg-mid.png");
+  let mid = new PIXI.extras.TilingSprite(
+    midTexture,
+    800,
+    500
+  );
+  mid.y = 248;
+  app.stage.addChild(mid);
+  
+  //#endregion
+  
   //#region  Create gameScene
   state = play;
   gameScene = new Container();
@@ -84,15 +99,18 @@ function setup() {
 
   //#endregion
 
-  app.stage.on("pointerdown", onPointerDown);
 
+  
+
+  app.stage.on("pointerdown", onPointerDown);
+  
   function onPointerDown() {
     gravity = -7;
   }
 
   setInterval(() => {
-    let h = Math.random() * (app.screen.height - 400) + 100;
-    let h2 = app.screen.height - (h + 200);
+    let h = Math.random() * (app.screen.height - 300) + 50;
+    let h2 = app.screen.height - (h + 50);
 
     if (barriers.children.length === 0) {
       let r = new Graphics();
@@ -107,12 +125,12 @@ function setup() {
       r2.drawRect(0, 0, 100, h2);
       r2.endFill();
       r2.x = app.screen.width + 300;
-      r2.y = h + 300;
+      r2.y = h + 200;
       barriers.addChild(r2);
     } else {
       let newX = barriers.children[barriers.children.length - 1].x + 300;
       let r3 = new Graphics();
-      r3.beginFill(0x6622ff);
+      r3.beginFill(0x66ccff);
       r3.drawRect(0, 0, 100, h);
       r3.endFill();
       r3.x = newX;
@@ -123,12 +141,14 @@ function setup() {
       r4.drawRect(0, 0, 100, h2);
       r4.endFill();
       r4.x = newX;
-      r4.y = h + 300;
+      r4.y = h + 200;
       barriers.addChild(r4);
     }
   }, 5000);
 
   function play() {
+    mid.tilePosition.x -= 1;
+
     barriers.x -= 1;
     console.log(barriers.children.length);
     if (-gravity > 0) {
@@ -166,7 +186,6 @@ function setup() {
   }
   function end() {
     app.ticker.stop();
-    message.text = ` Your Score is ${barriers.children.length / 2 - 3}`;
     gameScene.visible = false;
     gameOverScene.visible = true;
   }
