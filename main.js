@@ -147,7 +147,7 @@ function setup() {
   }, 5000);
 
   function play() {
-    mid.tilePosition.x -= 1;
+    mid.tilePosition.x -= .85;
 
     barriers.x -= 1;
     console.log(barriers.children.length);
